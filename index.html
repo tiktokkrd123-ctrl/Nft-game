@@ -3,132 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NFT Neon Box</title>
+    <title>NFT Fragment Case</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --neon: #00f2ff;
-            --accent: #7000ff;
+            --tg-theme-bg: #0a0a0a;
+            --fragment-blue: #0088cc;
+            --gold: #f1c40f;
         }
 
         body {
-            background: #050505;
+            background-color: var(--tg-theme-bg);
             color: white;
-            font-family: sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             text-align: center;
             margin: 0; padding: 20px;
-            height: 100vh;
             display: flex; flex-direction: column; align-items: center;
-            overflow: hidden;
+            height: 100vh;
         }
 
         .header {
             background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            padding: 20px;
+            padding: 15px;
             border-radius: 20px;
             width: 90%;
+            margin-bottom: 25px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 20px;
         }
 
-        .nft-viewport {
-            width: 280px; height: 380px;
-            background: #000;
-            border-radius: 30px;
-            position: relative;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border: 1px solid var(--neon);
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.2);
+        .nft-card {
+            width: 300px;
+            height: 400px;
+            background: #161616;
+            border-radius: 25px;
+            border: 1px solid rgba(0, 136, 204, 0.3);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .nft-image {
-            width: 220px; height: 220px;
-            object-fit: contain;
+        #nft-img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
             display: none;
-            filter: drop-shadow(0 0 15px var(--neon));
+        }
+
+        .rarity-tag {
+            position: absolute;
+            top: 15px; right: 15px;
+            background: var(--fragment-blue);
+            padding: 5px 12px;
+            border-radius: 10px;
+            font-size: 12px; font-weight: bold;
+            display: none;
         }
 
         .nft-name {
-            margin-top: 20px;
-            font-size: 24px; font-weight: bold;
-            color: var(--neon);
-            text-transform: uppercase;
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 15px;
+            color: #fff;
         }
 
-        .main-btn {
-            background: white; color: black;
-            border: none; padding: 18px 50px;
-            font-size: 18px; font-weight: 800;
-            border-radius: 100px;
-            text-transform: uppercase;
-            box-shadow: 0 0 20px rgba(255,255,255,0.3);
+        .btn-open {
+            background: var(--fragment-blue);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 15px;
+            cursor: pointer;
+            width: 90%;
+            transition: 0.2s;
         }
 
-        .main-btn:active { transform: scale(0.9); }
+        .btn-open:active { transform: scale(0.96); opacity: 0.9; }
 
-        .reveal { animation: revealEffect 0.5s ease-out forwards; }
-        @keyframes revealEffect {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+        .reveal-anim { animation: reveal 0.6s ease-out; }
+        @keyframes reveal {
+            from { transform: scale(0.8); opacity: 0; filter: brightness(2); }
+            to { transform: scale(1); opacity: 1; filter: brightness(1); }
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div style="font-size: 12px; color: #888;">CURRENT BALANCE</div>
-        <div style="font-size: 20px; font-weight: bold; margin-top: 5px;">
-            💎 1.50 | ⭐️ <span id="stars">950</span>
+        <div style="font-size: 12px; opacity: 0.5; margin-bottom: 5px;">FRAGMENT MARKETPLACE</div>
+        <div style="font-size: 20px; font-weight: bold;">
+            💎 1.50 TON | ⭐️ <span id="stars">950</span>
         </div>
     </div>
 
-    <div class="nft-viewport">
-        <div id="status">SCANNING READY...</div>
-        <img id="nft-img" class="nft-image" src="" alt="NFT">
-        <div id="nft-title" class="nft-name"></div>
+    <div class="nft-card">
+        <div id="rarity" class="rarity-tag">RARE</div>
+        <div id="placeholder" style="opacity: 0.3; font-weight: bold;">READY TO MINT</div>
+        <img id="nft-img" src="" alt="NFT">
+        <div id="nft-name" class="nft-name"></div>
     </div>
 
-    <button class="main-btn" onclick="openCase()">Unlock Box</button>
+    <button class="btn-open" onclick="openCase()">OPEN MYSTERY BOX</button>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        // НОВЫЕ СТАТИЧНЫЕ ССЫЛКИ, КОТОРЫЕ НЕ УДАЛЯТ
-        const nfts = [
-            {name: "Pepe Smart", img: "https://files.catbox.moe/kxt0v6.png"},
-            {name: "Pepe Sad", img: "https://files.catbox.moe/u0p8i9.png"},
-            {name: "Pepe Rich", img: "https://files.catbox.moe/8b72wa.png"},
-            {name: "Pepe Warrior", img: "https://files.catbox.moe/3p719j.png"}
+        // РЕАЛЬНЫЕ ССЫЛКИ С FRAGMENT (Используем официальные аватары и анонимные номера)
+        const fragmentNfts = [
+            {name: "Diamond Dog", img: "https://fragment.com/img/nft/dog.webp", rarity: "LEGENDARY"},
+            {name: "Anonymous #888", img: "https://fragment.com/img/nft/number.webp", rarity: "RARE"},
+            {name: "Star Whale", img: "https://fragment.com/img/nft/whale.webp", rarity: "COMMON"}
         ];
 
         function openCase() {
             let starsEl = document.getElementById('stars');
-            let currentStars = parseInt(starsEl.innerText);
+            let current = parseInt(starsEl.innerText);
 
-            if (currentStars < 50) {
+            if (current < 50) {
                 tg.showAlert("Not enough Stars!");
                 return;
             }
 
+            // Списываем и вибрируем
+            starsEl.innerText = current - 50;
             tg.HapticFeedback.impactOccurred("heavy");
-            starsEl.innerText = currentStars - 50;
 
-            const nft = nfts[Math.floor(Math.random() * nfts.length)];
+            const nft = fragmentNfts[Math.floor(Math.random() * fragmentNfts.length)];
 
-            document.getElementById('status').style.display = 'none';
+            // Скрываем текст, показываем картинку
+            document.getElementById('placeholder').style.display = 'none';
             const img = document.getElementById('nft-img');
-            const title = document.getElementById('nft-title');
+            const rarity = document.getElementById('rarity');
+            const title = document.getElementById('nft-name');
 
             img.src = nft.img;
             img.style.display = 'block';
-            img.classList.remove('reveal');
-            void img.offsetWidth; // Магия для перезапуска анимации
-            img.classList.add('reveal');
-            
+            img.className = 'reveal-anim';
+
+            rarity.innerText = nft.rarity;
+            rarity.style.display = 'block';
+            rarity.style.background = nft.rarity === 'LEGENDARY' ? '#f1c40f' : '#0088cc';
+
             title.innerText = nft.name;
+
             tg.HapticFeedback.notificationOccurred("success");
         }
     </script>
