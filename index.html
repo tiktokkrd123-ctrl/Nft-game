@@ -12,7 +12,7 @@
             font-family: -apple-system, system-ui, sans-serif;
             margin: 0; padding: 20px;
             display: flex; flex-direction: column; align-items: center;
-            height: 100vh; overflow: hidden;
+            height: 100vh;
         }
 
         .balance-card {
@@ -22,7 +22,6 @@
             width: 85%;
             margin-bottom: 30px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
         }
 
         .nft-card {
@@ -36,12 +35,10 @@
             margin-bottom: 40px;
         }
 
-        /* Картинка теперь вшита кодом */
         #nft-img {
             width: 200px; height: 200px;
             object-fit: contain;
-            display: none;
-            filter: drop-shadow(0 0 10px #00f2ff);
+            display: none; /* Скрыто до нажатия кнопки */
         }
 
         .nft-name {
@@ -54,23 +51,19 @@
             border: none; padding: 20px 60px;
             font-size: 18px; font-weight: 800;
             border-radius: 100px;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
         }
-
-        .btn-open:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
 
     <div class="balance-card">
-        <div style="font-size: 12px; color: #888; margin-bottom: 5px;">CURRENT BALANCE</div>
-        <div style="font-size: 20px; font-weight: bold;">
+        <div style="font-size: 20px; font-weight: bold; text-align: center;">
             💎 1.50 | ⭐️ <span id="stars">950</span>
         </div>
     </div>
 
     <div class="nft-card">
-        <div id="status" style="opacity: 0.3;">READY TO UNLOCK</div>
+        <div id="status" style="opacity: 0.3;">READY TO OPEN</div>
         <img id="nft-img" src="" alt="NFT">
         <div id="nft-title" class="nft-name"></div>
     </div>
@@ -80,9 +73,6 @@
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-
-        // Это Base64 код картинки (логотип TON). Telegram не может его заблокировать.
-        const tonLogoBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAAsTAAALEwEAmpwYAAABy0lEQVR4nO3dy2pUURDG8X9SBy8YvCBeSNCIE7woSNCIE0UuFEIEH8B78I7BR8EHEvAFvCBeSBB8ALmCi7mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCi4mCix90Y6Y/XyS0tAAAAABJRU5ErkJggg==";
 
         function openBox() {
             let s = document.getElementById('stars');
@@ -95,10 +85,11 @@
             document.getElementById('status').style.display = 'none';
             const img = document.getElementById('nft-img');
             
-            img.src = tonLogoBase64; // Используем вшитый код вместо ссылки
+            // ПРЯМАЯ ССЫЛКА НА КАРТИНКУ (Пример: Лого TON)
+            img.src = "https://raw.githubusercontent.com/ton-blockchain/ton/master/ton-logo.png";
             img.style.display = 'block';
             
-            document.getElementById('nft-title').innerText = "CRYPTO TON";
+            document.getElementById('nft-title').innerText = "CRYPTO TON #1";
             tg.HapticFeedback.notificationOccurred("success");
         }
     </script>
