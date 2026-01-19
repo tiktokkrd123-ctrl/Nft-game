@@ -7,185 +7,101 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --neon-color: #00f2ff;
-            --accent-color: #7000ff;
+            --neon: #00f2ff;
+            --accent: #7000ff;
         }
 
         body {
             background: #050505;
             color: white;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-family: sans-serif;
             text-align: center;
-            margin: 0;
-            padding: 20px;
+            margin: 0; padding: 20px;
             height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            display: flex; flex-direction: column; align-items: center;
             overflow: hidden;
         }
 
-        /* Анимированный фон */
-        body::before {
-            content: "";
-            position: absolute;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(112,0,255,0.1) 0%, transparent 50%);
-            animation: rotate 20s linear infinite;
-            z-index: -1;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* Карточка баланса */
         .header {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
             padding: 20px;
-            border-radius: 24px;
+            border-radius: 20px;
             width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .nft-viewport {
+            width: 280px; height: 380px;
+            background: #000;
+            border-radius: 30px;
+            position: relative;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border: 1px solid var(--neon);
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.2);
             margin-bottom: 30px;
         }
 
-        .balance-label {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #888;
-            margin-bottom: 8px;
-        }
-
-        .balance-value {
-            font-size: 22px;
-            font-weight: 800;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        /* Контейнер для NFT */
-        .nft-viewport {
-            width: 300px;
-            height: 400px;
-            background: #0a0a0a;
-            border-radius: 32px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(0, 242, 255, 0.3);
-            box-shadow: 0 0 40px rgba(0, 242, 255, 0.1);
-            margin-bottom: 40px;
-            transition: 0.5s;
-        }
-
-        .nft-viewport::after {
-            content: "";
-            position: absolute;
-            inset: -2px;
-            background: linear-gradient(45deg, var(--neon-color), var(--accent-color));
-            border-radius: 34px;
-            z-index: -1;
-            opacity: 0.3;
-        }
-
         .nft-image {
-            width: 240px;
-            height: 240px;
+            width: 220px; height: 220px;
             object-fit: contain;
             display: none;
-            filter: drop-shadow(0 0 20px rgba(0, 242, 255, 0.4));
-        }
-
-        #status-text {
-            font-size: 14px;
-            color: var(--neon-color);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 1; }
+            filter: drop-shadow(0 0 15px var(--neon));
         }
 
         .nft-name {
             margin-top: 20px;
-            font-size: 24px;
-            font-weight: 900;
-            background: linear-gradient(to right, #fff, #888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* Кнопка */
-        .main-button {
-            background: white;
-            color: black;
-            border: none;
-            padding: 20px 60px;
-            font-size: 18px;
-            font-weight: 800;
-            border-radius: 100px;
-            cursor: pointer;
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
-            transition: 0.2s;
+            font-size: 24px; font-weight: bold;
+            color: var(--neon);
             text-transform: uppercase;
         }
 
-        .main-button:active {
-            transform: scale(0.95);
-            background: var(--neon-color);
+        .main-btn {
+            background: white; color: black;
+            border: none; padding: 18px 50px;
+            font-size: 18px; font-weight: 800;
+            border-radius: 100px;
+            text-transform: uppercase;
+            box-shadow: 0 0 20px rgba(255,255,255,0.3);
         }
 
-        /* Анимация выпадения */
-        .reveal {
-            animation: revealEffect 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-        }
+        .main-btn:active { transform: scale(0.9); }
 
+        .reveal { animation: revealEffect 0.5s ease-out forwards; }
         @keyframes revealEffect {
-            0% { transform: scale(0.8) translateY(20px); opacity: 0; filter: brightness(5); }
-            100% { transform: scale(1) translateY(0); opacity: 1; filter: brightness(1); }
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="balance-label">Current Balance</div>
-        <div class="balance-value">
-            <span>💎 1.50</span>
-            <span style="color: rgba(255,255,255,0.2)">|</span>
-            <span style="color: #00f2ff;">⭐️ <span id="stars">900</span></span>
+        <div style="font-size: 12px; color: #888;">CURRENT BALANCE</div>
+        <div style="font-size: 20px; font-weight: bold; margin-top: 5px;">
+            💎 1.50 | ⭐️ <span id="stars">950</span>
         </div>
     </div>
 
-    <div class="nft-viewport" id="card">
-        <div id="status-text">Ready to Scan</div>
+    <div class="nft-viewport">
+        <div id="status">SCANNING READY...</div>
         <img id="nft-img" class="nft-image" src="" alt="NFT">
         <div id="nft-title" class="nft-name"></div>
     </div>
 
-    <button class="main-button" onclick="openCase()">Unlock Box</button>
+    <button class="main-btn" onclick="openCase()">Unlock Box</button>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        tg.backgroundColor = "#050505";
-        tg.headerColor = "#050505";
 
+        // НОВЫЕ СТАТИЧНЫЕ ССЫЛКИ, КОТОРЫЕ НЕ УДАЛЯТ
         const nfts = [
-            {name: "PEPE RICH", img: "https://i.postimg.cc/9f0S709v/pepe-rich.png"},
-            {name: "PEPE SAD", img: "https://i.postimg.cc/8zYmH6Y8/pepe-sad.png"},
-            {name: "PEPE SMART", img: "https://i.postimg.cc/mD7966nL/pepe-smart.png"},
-            {name: "PEPE WARRIOR", img: "https://i.postimg.cc/brv7pRW3/pepe-warrior.png"}
+            {name: "Pepe Smart", img: "https://files.catbox.moe/kxt0v6.png"},
+            {name: "Pepe Sad", img: "https://files.catbox.moe/u0p8i9.png"},
+            {name: "Pepe Rich", img: "https://files.catbox.moe/8b72wa.png"},
+            {name: "Pepe Warrior", img: "https://files.catbox.moe/3p719j.png"}
         ];
 
         function openCase() {
@@ -193,7 +109,7 @@
             let currentStars = parseInt(starsEl.innerText);
 
             if (currentStars < 50) {
-                tg.showAlert("Low Energy (Stars)!");
+                tg.showAlert("Not enough Stars!");
                 return;
             }
 
@@ -202,16 +118,17 @@
 
             const nft = nfts[Math.floor(Math.random() * nfts.length)];
 
-            document.getElementById('status-text').style.display = 'none';
+            document.getElementById('status').style.display = 'none';
             const img = document.getElementById('nft-img');
             const title = document.getElementById('nft-title');
 
             img.src = nft.img;
             img.style.display = 'block';
-            img.className = 'nft-image reveal';
+            img.classList.remove('reveal');
+            void img.offsetWidth; // Магия для перезапуска анимации
+            img.classList.add('reveal');
             
             title.innerText = nft.name;
-
             tg.HapticFeedback.notificationOccurred("success");
         }
     </script>
