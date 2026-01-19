@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NFT Battle App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -12,93 +12,91 @@
             font-family: 'Arial', sans-serif;
             text-align: center;
             margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
         }
         .balance {
             background: rgba(255, 255, 255, 0.1);
             padding: 15px; border-radius: 15px;
-            margin-bottom: 20px; border: 1px solid #30475e;
+            margin-bottom: 20px; width: 80%;
         }
-        .nft-card {
-            width: 200px; height: 250px;
-            margin: 20px auto;
+        .card-box {
+            width: 250px; height: 320px;
             background: #222831;
             border-radius: 20px;
             border: 2px solid #f05454;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             box-shadow: 0 0 20px rgba(240, 84, 84, 0.3);
-            transition: transform 0.3s;
+            margin-bottom: 30px;
+            overflow: hidden;
         }
-        .nft-card img {
-            width: 150px; border-radius: 10px;
+        #nft-img {
+            width: 100%; height: 220px;
+            object-fit: contain;
+            display: none;
         }
         .btn-open {
             background: #f05454;
             color: white; border: none;
-            padding: 15px 30px;
+            padding: 15px 40px;
             font-size: 18px; font-weight: bold;
             border-radius: 50px; cursor: pointer;
-            box-shadow: 0 5px 15px rgba(240, 84, 84, 0.4);
         }
         .btn-open:active { transform: scale(0.95); }
-        
-        /* Анимация появления */
+        .animate-drop { animation: pop 0.5s ease-out; }
         @keyframes pop {
             0% { transform: scale(0); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
-        .animate-drop { animation: pop 0.5s ease-out; }
     </style>
 </head>
 <body>
 
     <div class="balance">
-        <div>💎 TON: <span id="ton">1.50</span></div>
-        <div>⭐️ Stars: <span id="stars">1000</span></div>
+        <div>💎 TON: 1.50</div>
+        <div>⭐️ Stars: <span id="stars">950</span></div>
     </div>
 
-    <div id="result-area">
-        <div class="nft-card">
-            <p>Нажми кнопку,</p>
-            <p>чтобы открыть кейс</p>
-        </div>
+    <div class="card-box">
+        <img id="nft-img" src="" alt="NFT">
+        <div id="status">ГОТОВ К ОТКРЫТИЮ</div>
+        <div id="nft-name" style="margin-top: 10px; font-weight: bold;"></div>
     </div>
 
     <button class="btn-open" onclick="openCase()">ОТКРЫТЬ КЕЙС</button>
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand(); // Развернуть на весь экран
+        tg.expand();
 
         const nfts = [
-            {name: "Golden Pepe", img: "https://i.ibb.co/vzP6YmX/pepe.jpg"},
-            {name: "Cyber Doge", img: "https://i.ibb.co/G3X6YmX/doge.jpg"},
-            {name: "Rich Whale", img: "https://i.ibb.co/H3X6YmX/whale.jpg"}
+            {name: "Sad Pepe", img: "https://raw.githubusercontent.com/Polymer-Project/logos/master/polymer.png"}, // Временная замена для теста
+            {name: "Classic Pepe", img: "https://w7.pngwing.com/pngs/336/729/png-transparent-pepe-the-frog-illustration-pepe-the-frog-batman-internet-meme-frog-comics-mammal-animals-thumbnail.png"},
+            {name: "Green Frog", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR07fW_6-3-58I0Y4Fw262Wb1Y8z7E8-C6TzQ&s"}
         ];
 
         function openCase() {
             let stars = document.getElementById('stars');
             if (parseInt(stars.innerText) < 50) {
-                alert("Недостаточно Stars!");
+                tg.showAlert("Мало звезд!");
                 return;
             }
             
             stars.innerText = parseInt(stars.innerText) - 50;
+            tg.HapticFeedback.impactOccurred("medium");
+
+            const random = nfts[Math.floor(Math.random() * nfts.length)];
             
-            const randomNft = nfts[Math.floor(Math.random() * nfts.length)];
+            document.getElementById('status').style.display = 'none';
+            const img = document.getElementById('nft-img');
+            img.src = random.img;
+            img.style.display = 'block';
+            img.className = 'animate-drop';
             
-            const area = document.getElementById('result-area');
-            area.innerHTML = `
-                <div class="nft-card animate-drop">
-                    <img src="${randomNft.img}" alt="NFT">
-                    <p>${randomNft.name}</p>
-                </div>
-            `;
+            document.getElementById('nft-name').innerText = random.name;
             
-            // Вибрация телефона (фишка Telegram)
             tg.HapticFeedback.notificationOccurred("success");
         }
     </script>
 </body>
-  </html>
-  
+</html>
