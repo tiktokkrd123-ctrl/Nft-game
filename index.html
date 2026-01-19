@@ -7,57 +7,52 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            background: #1a1a2e;
             color: white;
-            font-family: 'Arial', sans-serif;
+            font-family: sans-serif;
             text-align: center;
-            margin: 0; padding: 20px;
-            display: flex; flex-direction: column; align-items: center;
-        }
-        .balance {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px; border-radius: 15px;
-            margin-bottom: 20px; width: 85%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
         }
         .nft-card {
-            width: 260px; height: 340px;
+            width: 250px;
+            height: 320px;
             background: #222831;
-            border-radius: 25px;
+            border-radius: 20px;
             border: 2px solid #f05454;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            box-shadow: 0 0 20px rgba(240, 84, 84, 0.3);
-            margin-bottom: 30px;
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
         }
         #nft-img {
-            max-width: 90%;
-            max-height: 220px;
-            border-radius: 15px;
-            display: none;
+            width: 200px;
+            height: 200px;
             object-fit: contain;
+            display: none; /* Скрыта до нажатия кнопки */
         }
         .btn-open {
             background: #f05454;
-            color: white; border: none;
-            padding: 18px 45px;
-            font-size: 20px; font-weight: bold;
-            border-radius: 50px; cursor: pointer;
-            box-shadow: 0 5px 15px rgba(240, 84, 84, 0.4);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 18px;
         }
-        .btn-open:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
-    <div class="balance">
-        <div>💎 TON: 1.50</div>
-        <div>⭐️ Stars: <span id="stars">950</span></div>
-    </div>
 
     <div class="nft-card">
         <img id="nft-img" src="" alt="NFT">
-        <div id="status" style="opacity: 0.5;">ГОТОВ К ОТКРЫТИЮ</div>
-        <div id="nft-name" style="margin-top: 15px; font-size: 20px; font-weight: bold;"></div>
+        <div id="status">КЕЙС ГОТОВ</div>
+        <div id="nft-name" style="margin-top:10px; font-weight:bold;"></div>
     </div>
 
     <button class="btn-open" onclick="openCase()">ОТКРЫТЬ КЕЙС</button>
@@ -66,31 +61,21 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Ссылки на файлы, которые ты загрузил в свой GitHub
-        const nfts = [
-            {name: "Pepe Classic", img: "pepe.png"}
-        ];
-
         function openCase() {
-            let starsEl = document.getElementById('stars');
-            let currentStars = parseInt(starsEl.innerText);
-            
-            if (currentStars < 50) {
-                tg.showAlert("Недостаточно Stars!");
-                return;
-            }
+            // Тряска телефона
+            tg.HapticFeedback.impactOccurred("medium");
 
-            starsEl.innerText = currentStars - 50;
-            tg.HapticFeedback.impactOccurred("heavy");
+            // Берем картинку, которую ТЫ загрузил в GitHub
+            const imgPath = "pepe.png"; 
 
-            const random = nfts[Math.floor(Math.random() * nfts.length)];
-            
             document.getElementById('status').style.display = 'none';
             const img = document.getElementById('nft-img');
-            img.src = random.img;
+            
+            img.src = imgPath + "?v=" + Date.now(); // Добавляем хвост, чтобы не глючило при обновлении
             img.style.display = 'block';
             
-            document.getElementById('nft-name').innerText = random.name;
+            document.getElementById('nft-name').innerText = "PEPE NFT #001";
+            
             tg.HapticFeedback.notificationOccurred("success");
         }
     </script>
