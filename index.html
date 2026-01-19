@@ -9,87 +9,107 @@
         body {
             background-color: #050505;
             color: #fff;
-            font-family: -apple-system, system-ui, sans-serif;
+            font-family: -apple-system, sans-serif;
             margin: 0; padding: 20px;
             display: flex; flex-direction: column; align-items: center;
             height: 100vh;
         }
 
-        .balance-card {
+        .balance {
             background: rgba(255, 255, 255, 0.05);
-            padding: 15px 25px;
-            border-radius: 20px;
-            width: 85%;
-            margin-bottom: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px; border-radius: 15px;
+            width: 90%; margin-bottom: 20px;
+            text-align: center; border: 1px solid #333;
         }
 
-        .nft-card {
-            width: 280px; height: 380px;
+        .nft-display {
+            width: 280px; height: 350px;
             background: #111;
-            border-radius: 30px;
-            border: 1px solid #00f2ff;
+            border-radius: 25px;
+            border: 2px solid #00f2ff;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.1);
-            margin-bottom: 40px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
         }
 
-        #nft-img {
-            width: 200px; height: 200px;
-            object-fit: contain;
-            display: none; /* Скрыто до нажатия кнопки */
+        /* Вместо обычного img используем блок с фоном */
+        #photo-box {
+            width: 220px; height: 220px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: none; /* Появится при клике */
+        }
+
+        /* Запасной текст если картинка не алё */
+        #fallback-icon {
+            font-size: 80px;
+            display: none;
         }
 
         .nft-name {
-            margin-top: 20px; font-size: 24px; font-weight: bold;
-            color: #00f2ff; text-transform: uppercase;
+            margin-top: 20px; font-size: 22px; font-weight: bold;
+            color: #00f2ff;
         }
 
-        .btn-open {
+        .btn {
             background: #fff; color: #000;
-            border: none; padding: 20px 60px;
-            font-size: 18px; font-weight: 800;
-            border-radius: 100px;
+            border: none; padding: 20px; width: 90%;
+            border-radius: 50px; font-size: 18px; font-weight: 800;
         }
     </style>
 </head>
 <body>
 
-    <div class="balance-card">
-        <div style="font-size: 20px; font-weight: bold; text-align: center;">
-            💎 1.50 | ⭐️ <span id="stars">950</span>
-        </div>
+    <div class="balance">
+        💎 1.50 TON | ⭐️ <span id="stars">950</span>
     </div>
 
-    <div class="nft-card">
-        <div id="status" style="opacity: 0.3;">READY TO OPEN</div>
-        <img id="nft-img" src="" alt="NFT">
+    <div class="nft-display">
+        <div id="hint">КЕЙС ГОТОВ</div>
+        <div id="photo-box"></div>
+        <div id="fallback-icon">🎁</div>
         <div id="nft-title" class="nft-name"></div>
     </div>
 
-    <button class="btn-open" onclick="openBox()">UNLOCK BOX</button>
+    <button class="btn" onclick="openBox()">UNLOCK BOX</button>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
 
+        // Берем картинки с Википедии (их почти никогда не блочат)
+        const items = [
+            {name: "PEPE SMART", img: "https://upload.wikimedia.org/wikipedia/en/1/1b/Pepe_the_Frog.png", icon: "🧠"},
+            {name: "GOLDEN TON", img: "https://cryptologos.cc/logos/toncoin-ton-logo.png", icon: "💰"}
+        ];
+
         function openBox() {
             let s = document.getElementById('stars');
             let v = parseInt(s.innerText);
-            if (v < 50) { tg.showAlert("Need Stars!"); return; }
+            if (v < 50) { tg.showAlert("Мало Stars!"); return; }
 
             s.innerText = v - 50;
-            tg.HapticFeedback.impactOccurred("heavy");
+            tg.HapticFeedback.impactOccurred("medium");
 
-            document.getElementById('status').style.display = 'none';
-            const img = document.getElementById('nft-img');
+            const item = items[Math.floor(Math.random() * items.length)];
+
+            document.getElementById('hint').style.display = 'none';
             
-            // ПРЯМАЯ ССЫЛКА НА КАРТИНКУ (Пример: Лого TON)
-            img.src = "https://raw.githubusercontent.com/ton-blockchain/ton/master/ton-logo.png";
-            img.style.display = 'block';
+            const box = document.getElementById('photo-box');
+            const fallback = document.getElementById('fallback-icon');
             
-            document.getElementById('nft-title').innerText = "CRYPTO TON #1";
+            // Пробуем поставить картинку фоном
+            box.style.backgroundImage = "url('" + item.img + "')";
+            box.style.display = 'block';
+            
+            // Если через 1 секунду высота блока 0 или ошибка — покажем эмодзи
+            fallback.innerText = item.icon;
+            fallback.style.display = 'block'; // Показываем иконку в любом случае как подложку
+
+            document.getElementById('nft-title').innerText = item.name;
             tg.HapticFeedback.notificationOccurred("success");
         }
     </script>
